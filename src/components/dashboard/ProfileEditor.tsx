@@ -38,6 +38,7 @@ import { Input } from "@/components/ui/input";
 import { DataExportCard } from "@/components/dashboard/DataExportCard";
 import { CustomDomainPanel } from "@/components/dashboard/CustomDomainPanel";
 import { VerifiedBadgeCard } from "@/components/dashboard/VerifiedBadgeCard";
+import { SocialSharingCard } from "@/components/dashboard/SocialSharingCard";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Drawer, DrawerContent, DrawerTitle } from "@/components/ui/drawer";
@@ -1324,6 +1325,13 @@ export function ProfileEditor() {
                 <div className="h-px bg-border" />
                 <VerifiedBadgeCard handle={handle || null} />
               </section>
+
+              <SocialSharingCard
+                handle={handle || null}
+                displayName={displayName}
+                prefs={prefs}
+                setPref={setPref}
+              />
 
               <section className="rounded-2xl border border-border bg-card p-4 sm:p-5">
                 <h2 className="text-lg font-medium">Handle & Identifier</h2>

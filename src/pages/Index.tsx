@@ -9,6 +9,7 @@ import { QRTypeSheet } from "@/components/QRTypeSheet";
 import { useI18n } from "@/lib/i18n";
 
 import { QRStyleTabs, FrameStyle } from "@/components/QRStyleTabs";
+import { ProfileShowcase } from "@/components/home/ProfileShowcase";
 import { BodyShape } from "@/components/BodyShapeSelector";
 import { DEFAULT_FRAME_TWEAKS, type FrameTweaks } from "@/components/QRFrames";
 
@@ -576,6 +577,8 @@ const Index = () => {
 
 
       <TrustBar />
+
+      <ProfileShowcase />
 
       <ValuesSection />
     </AppLayout>

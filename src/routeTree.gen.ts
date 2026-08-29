@@ -73,6 +73,7 @@ import { Route as ApiPublicAuthMagicLinkRouteImport } from './routes/api_.public
 import { Route as ApiPublicBadgeHandleRouteImport } from './routes/api_.public.badge.$handle'
 import { Route as ApiPublicCronSecureshieldBillingRouteImport } from './routes/api_.public.cron.secureshield-billing'
 import { Route as ApiPublicCronSyncSocialsRouteImport } from './routes/api_.public.cron.sync-socials'
+import { Route as ApiPublicOgHandleRouteImport } from './routes/api_.public.og.$handle'
 import { Route as ApiPublicWebhooksBankingRouteImport } from './routes/api_.public.webhooks.banking'
 import { Route as ApiPublicAuthProviderCallbackRouteImport } from './routes/api_.public.auth.$provider.callback'
 
@@ -403,6 +404,11 @@ const ApiPublicCronSyncSocialsRoute =
     path: '/api/public/cron/sync-socials',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicOgHandleRoute = ApiPublicOgHandleRouteImport.update({
+  id: '/api_/public/og/$handle',
+  path: '/api/public/og/$handle',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicWebhooksBankingRoute =
   ApiPublicWebhooksBankingRouteImport.update({
     id: '/api_/public/webhooks/banking',
@@ -480,6 +486,7 @@ export interface FileRoutesByFullPath {
   '/api/public/badge/$handle': typeof ApiPublicBadgeHandleRoute
   '/api/public/cron/secureshield-billing': typeof ApiPublicCronSecureshieldBillingRoute
   '/api/public/cron/sync-socials': typeof ApiPublicCronSyncSocialsRoute
+  '/api/public/og/$handle': typeof ApiPublicOgHandleRoute
   '/api/public/webhooks/banking': typeof ApiPublicWebhooksBankingRoute
   '/api/public/auth/$provider/callback': typeof ApiPublicAuthProviderCallbackRoute
 }
@@ -547,6 +554,7 @@ export interface FileRoutesByTo {
   '/api/public/badge/$handle': typeof ApiPublicBadgeHandleRoute
   '/api/public/cron/secureshield-billing': typeof ApiPublicCronSecureshieldBillingRoute
   '/api/public/cron/sync-socials': typeof ApiPublicCronSyncSocialsRoute
+  '/api/public/og/$handle': typeof ApiPublicOgHandleRoute
   '/api/public/webhooks/banking': typeof ApiPublicWebhooksBankingRoute
   '/api/public/auth/$provider/callback': typeof ApiPublicAuthProviderCallbackRoute
 }
@@ -616,6 +624,7 @@ export interface FileRoutesById {
   '/api_/public/badge/$handle': typeof ApiPublicBadgeHandleRoute
   '/api_/public/cron/secureshield-billing': typeof ApiPublicCronSecureshieldBillingRoute
   '/api_/public/cron/sync-socials': typeof ApiPublicCronSyncSocialsRoute
+  '/api_/public/og/$handle': typeof ApiPublicOgHandleRoute
   '/api_/public/webhooks/banking': typeof ApiPublicWebhooksBankingRoute
   '/api_/public/auth/$provider/callback': typeof ApiPublicAuthProviderCallbackRoute
 }
@@ -685,6 +694,7 @@ export interface FileRouteTypes {
     | '/api/public/badge/$handle'
     | '/api/public/cron/secureshield-billing'
     | '/api/public/cron/sync-socials'
+    | '/api/public/og/$handle'
     | '/api/public/webhooks/banking'
     | '/api/public/auth/$provider/callback'
   fileRoutesByTo: FileRoutesByTo
@@ -752,6 +762,7 @@ export interface FileRouteTypes {
     | '/api/public/badge/$handle'
     | '/api/public/cron/secureshield-billing'
     | '/api/public/cron/sync-socials'
+    | '/api/public/og/$handle'
     | '/api/public/webhooks/banking'
     | '/api/public/auth/$provider/callback'
   id:
@@ -820,6 +831,7 @@ export interface FileRouteTypes {
     | '/api_/public/badge/$handle'
     | '/api_/public/cron/secureshield-billing'
     | '/api_/public/cron/sync-socials'
+    | '/api_/public/og/$handle'
     | '/api_/public/webhooks/banking'
     | '/api_/public/auth/$provider/callback'
   fileRoutesById: FileRoutesById
@@ -872,6 +884,7 @@ export interface RootRouteChildren {
   ApiPublicBadgeHandleRoute: typeof ApiPublicBadgeHandleRoute
   ApiPublicCronSecureshieldBillingRoute: typeof ApiPublicCronSecureshieldBillingRoute
   ApiPublicCronSyncSocialsRoute: typeof ApiPublicCronSyncSocialsRoute
+  ApiPublicOgHandleRoute: typeof ApiPublicOgHandleRoute
   ApiPublicWebhooksBankingRoute: typeof ApiPublicWebhooksBankingRoute
 }
 
@@ -1325,6 +1338,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicCronSyncSocialsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api_/public/og/$handle': {
+      id: '/api_/public/og/$handle'
+      path: '/api/public/og/$handle'
+      fullPath: '/api/public/og/$handle'
+      preLoaderRoute: typeof ApiPublicOgHandleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api_/public/webhooks/banking': {
       id: '/api_/public/webhooks/banking'
       path: '/api/public/webhooks/banking'
@@ -1508,6 +1528,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicBadgeHandleRoute: ApiPublicBadgeHandleRoute,
   ApiPublicCronSecureshieldBillingRoute: ApiPublicCronSecureshieldBillingRoute,
   ApiPublicCronSyncSocialsRoute: ApiPublicCronSyncSocialsRoute,
+  ApiPublicOgHandleRoute: ApiPublicOgHandleRoute,
   ApiPublicWebhooksBankingRoute: ApiPublicWebhooksBankingRoute,
 }
 export const routeTree = rootRouteImport
