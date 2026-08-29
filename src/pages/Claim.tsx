@@ -359,6 +359,8 @@ export default function Claim() {
               </div>
             ) : null}
 
+            <Turnstile onToken={setBotToken} />
+
             <Button
               type="submit"
               className="h-12 w-full rounded-2xl text-base font-medium"
