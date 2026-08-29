@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BadgeCheck, Mail } from "lucide-react";
+import { BadgeCheck, Mail, UserPlus } from "lucide-react";
 import { blockHref, isWidgetBlock, themeOf, type ProfileRecord } from "@/lib/profile";
 import { BookingBlock, NewsletterBlock, isBookingUrl } from "@/components/profile/ProfileWidgets";
 import { SocialPlatformIcon } from "@/lib/social-icons";
@@ -17,7 +17,12 @@ import {
   nameAccentStyle,
   parseDisplayPrefs,
   shouldShowWatermark,
+  availableBioLocales,
+  bioForLocale,
+  BIO_LOCALE_LABEL,
+  type BioLocale,
 } from "@/lib/profile-display";
+import { downloadVCard } from "@/lib/vcard";
 
 import { useI18n } from "@/lib/i18n";
 import { initialsFrom } from "@/components/UserAvatar";
@@ -69,6 +74,10 @@ export function ProfileView({
   const wide = layout === "wide";
   const earlyBeliever = Boolean(profile.is_early_believer);
   const [showVerifyInfo, setShowVerifyInfo] = useState(false);
+  /** Taalpil: auto-detect via de sitetaal, bezoeker mag zelf wisselen. */
+  const bioLocales = availableBioLocales(prefs);
+  const [bioLocale, setBioLocale] = useState<BioLocale | null>(null);
+  const shownBio = bioForLocale(prefs, profile.bio, bioLocale ?? locale ?? "nl");
   const aliasEmail =
     profile.show_email_publicly && earlyBeliever && profile.username
       ? `${profile.username}@rout.be`
@@ -172,11 +181,61 @@ export function ProfileView({
             <Mail className="h-3.5 w-3.5" aria-hidden /> Contact via {aliasEmail}
           </a>
         )}
-        {(profile.bio || profile.tagline) && (
+        {(shownBio || profile.tagline) && (
           <p className="mt-3 max-w-sm text-balance text-center text-sm" style={{ color: t.muted }}>
-            {profile.bio || profile.tagline}
+            {shownBio || profile.tagline}
           </p>
         )}
+
+        {bioLocales.length > 1 && (
+          <div className="mt-2 flex items-center gap-1">
+            {bioLocales.map((l) => {
+              const active = (bioLocale ?? locale) === l;
+              return (
+                <button
+                  key={l}
+                  type="button"
+                  onClick={() => setBioLocale(l)}
+                  aria-pressed={active}
+                  className="rounded-full px-2.5 py-1 text-[10px] font-semibold tracking-widest transition-opacity hover:opacity-80"
+                  style={{
+                    border: `1px solid ${t.border}`,
+                    background: active ? t.text : "transparent",
+                    color: active ? t.bg : t.muted,
+                  }}
+                >
+                  {BIO_LOCALE_LABEL[l]}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {/* vCard: bezoekers bewaren het profiel meteen in hun adresboek. */}
+        <button
+          type="button"
+          onClick={() =>
+            downloadVCard({
+              handle: profile.username ?? "",
+              displayName: profile.display_name,
+              tagline: profile.tagline,
+              bio: shownBio,
+              avatarUrl: profile.avatar_url,
+              email: aliasEmail,
+              profileUrl:
+                typeof window === "undefined"
+                  ? `https://rout.be/${profile.username ?? ""}`
+                  : window.location.href,
+              links: blocks
+                .filter((b) => /^https?:\/\//.test(blockHref(b)))
+                .map((b) => ({ label: b.kind, url: blockHref(b) })),
+            })
+          }
+          className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-opacity hover:opacity-80"
+          style={{ border: `1px solid ${t.border}`, color: t.text }}
+        >
+          <UserPlus className="h-3.5 w-3.5" aria-hidden /> Contact opslaan
+        </button>
 
         <BadgeShowcase userId={profile.id} theme={t} />
 

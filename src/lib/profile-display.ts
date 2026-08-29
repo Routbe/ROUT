@@ -39,6 +39,16 @@ export interface ProfileDisplayPrefs {
   /** Korte statuslijn onder de handle ("Strategic Architect"). */
   statusLine: string | null;
   nameAccent: NameAccent;
+  /** Social sharing & SEO (Studio → "Social Sharing & SEO"). */
+  metaTitle: string | null;
+  metaDescription: string | null;
+  ogImageUrl: string | null;
+  /** Accentkleur voor <meta name="theme-color"> (Discord/mobiele browserbalk). */
+  accentColor: string | null;
+  /** Meertalige bio; leeg = val terug op `profiles.bio`. */
+  bioNl: string | null;
+  bioEn: string | null;
+  bioFr: string | null;
 }
 
 export const DEFAULT_DISPLAY_PREFS: ProfileDisplayPrefs = {
@@ -58,6 +68,13 @@ export const DEFAULT_DISPLAY_PREFS: ProfileDisplayPrefs = {
   patternColor: null,
   statusLine: null,
   nameAccent: "classic",
+  metaTitle: null,
+  metaDescription: null,
+  ogImageUrl: null,
+  accentColor: null,
+  bioNl: null,
+  bioEn: null,
+  bioFr: null,
 };
 
 export const AVATAR_FRAMES: { id: AvatarFrame; label: string }[] = [
@@ -164,6 +181,13 @@ export function parseDisplayPrefs(raw: unknown): ProfileDisplayPrefs {
     patternColor: colorOrNull(r["patternColor"]),
     statusLine: textOrNull(r["statusLine"], 60),
     nameAccent: oneOf(r["nameAccent"], ["classic", "gold", "neon", "chrome"] as const, "classic"),
+    metaTitle: textOrNull(r["metaTitle"], 70),
+    metaDescription: textOrNull(r["metaDescription"], 200),
+    ogImageUrl: urlOrNull(r["ogImageUrl"]),
+    accentColor: colorOrNull(r["accentColor"]),
+    bioNl: textOrNull(r["bioNl"], 500),
+    bioEn: textOrNull(r["bioEn"], 500),
+    bioFr: textOrNull(r["bioFr"], 500),
   };
 }
 
@@ -367,4 +391,44 @@ export function blockButtonStyle(
     default:
       return { ...base, border: `1px solid ${theme.border}` };
   }
+}
+
+/* --------------------------------------------------- meertalige bio (NL/EN/FR) */
+
+export const BIO_LOCALES = ["nl", "en", "fr"] as const;
+export type BioLocale = (typeof BIO_LOCALES)[number];
+
+export const BIO_LOCALE_LABEL: Record<BioLocale, string> = {
+  nl: "NL",
+  en: "EN",
+  fr: "FR",
+};
+
+const BIO_KEY: Record<BioLocale, "bioNl" | "bioEn" | "bioFr"> = {
+  nl: "bioNl",
+  en: "bioEn",
+  fr: "bioFr",
+};
+
+/** Welke vertalingen heeft dit profiel effectief ingevuld? */
+export function availableBioLocales(prefs: ProfileDisplayPrefs): BioLocale[] {
+  return BIO_LOCALES.filter((l) => Boolean(prefs[BIO_KEY[l]]));
+}
+
+/**
+ * Bio in de gevraagde taal, met auto-detect: gevraagde taal → NL → eerste
+ * ingevulde vertaling → de klassieke `profiles.bio`.
+ */
+export function bioForLocale(
+  prefs: ProfileDisplayPrefs,
+  fallback: string | null | undefined,
+  locale: string,
+): string | null {
+  const wanted = (BIO_LOCALES as readonly string[]).includes(locale)
+    ? (locale as BioLocale)
+    : null;
+  if (wanted && prefs[BIO_KEY[wanted]]) return prefs[BIO_KEY[wanted]];
+  const first = availableBioLocales(prefs)[0];
+  if (first) return prefs[BIO_KEY[first]];
+  return fallback?.trim() || null;
 }

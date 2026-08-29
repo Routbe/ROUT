@@ -9,6 +9,7 @@ import {
   socialMeta,
 } from "@/lib/social-meta";
 import type { Locale } from "@/lib/i18n";
+import { parseDisplayPrefs, bioForLocale } from "@/lib/profile-display";
 
 type Row = Record<string, unknown> | null;
 
@@ -51,15 +52,23 @@ export const Route = createFileRoute("/u/$username")({
               bio: profile["bio"] as string | null,
               avatarUrl: profile["avatar_url"] as string | null,
             }),
-      meta: profileSocialMeta({
-        locale,
-        handle: (profile["username"] as string | undefined) ?? handle,
-        displayName: profile["display_name"] as string | null,
-        tagline: profile["tagline"] as string | null,
-        bio: profile["bio"] as string | null,
-        avatarUrl: profile["avatar_url"] as string | null,
-        frozen: profile["status"] === "frozen",
-      }),
+      meta: (() => {
+        const prefs = parseDisplayPrefs(profile["display_prefs"]);
+        return profileSocialMeta({
+          locale,
+          handle: (profile["username"] as string | undefined) ?? handle,
+          displayName: profile["display_name"] as string | null,
+          tagline: profile["tagline"] as string | null,
+          bio: bioForLocale(prefs, profile["bio"] as string | null, locale),
+          avatarUrl: profile["avatar_url"] as string | null,
+          frozen: profile["status"] === "frozen",
+          metaTitle: prefs.metaTitle,
+          metaDescription: prefs.metaDescription,
+          ogImageUrl: prefs.ogImageUrl,
+          accentColor: prefs.accentColor,
+          url,
+        });
+      })(),
     };
   },
   component: Page,

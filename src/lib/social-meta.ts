@@ -74,28 +74,45 @@ export function profileSocialMeta(input: {
   bio?: string | null;
   avatarUrl?: string | null;
   frozen?: boolean;
+  /** Eigen overrides uit de Studio ("Social Sharing & SEO"). */
+  metaTitle?: string | null;
+  metaDescription?: string | null;
+  ogImageUrl?: string | null;
+  accentColor?: string | null;
+  /** Absolute URL van de profielpagina zelf. */
+  url?: string | null;
 }) {
   const name = input.displayName?.trim() || `@${input.handle}`;
-  const title = `${name} (@${input.handle}) — ROUT`;
+  const title = input.metaTitle?.trim() || `${name} (@${input.handle}) — ROUT`;
   const description = input.frozen
     ? SOCIAL_CARDS[input.locale].description
-    : (input.tagline?.trim() ||
+    : (input.metaDescription?.trim() ||
+        input.tagline?.trim() ||
         input.bio?.trim()?.slice(0, 160) ||
         SOCIAL_CARDS[input.locale].description);
-  const image = input.avatarUrl?.startsWith("http") ? input.avatarUrl : null;
+  // Eigen upload > dynamisch gegenereerde ROUT-kaart (nooit de kale avatar).
+  const image =
+    input.ogImageUrl?.trim() ||
+    `https://rout.be/api/public/og/${encodeURIComponent(input.handle)}.svg`;
+  const url = input.url?.trim() || `https://rout.be/${input.handle}`;
   return [
     { title },
     { name: "description", content: description },
     { property: "og:title", content: title },
     { property: "og:description", content: description },
     { property: "og:type", content: "profile" },
+    { property: "og:site_name", content: "ROUT" },
+    { property: "og:url", content: url },
     { property: "og:locale", content: `${input.locale}_${input.locale.toUpperCase()}` },
+    { property: "og:image", content: image },
+    { property: "og:image:width", content: "1200" },
+    { property: "og:image:height", content: "630" },
     { name: "twitter:card", content: "summary_large_image" },
-    ...(image
-      ? [
-          { property: "og:image", content: image },
-          { name: "twitter:image", content: image },
-        ]
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: image },
+    ...(input.accentColor
+      ? [{ name: "theme-color", content: input.accentColor }]
       : []),
     ...(input.frozen ? [{ name: "robots", content: "noindex, nofollow" }] : []),
   ];

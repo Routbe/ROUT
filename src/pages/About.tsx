@@ -21,6 +21,35 @@ import { AppLayout } from "@/components/layout/AppLayout";
 
 const HANDLE_RE = /[^a-z0-9._-]/g;
 
+/** Eerlijke vergelijking met de klassieke link-in-bio-diensten. */
+const COMPARISON = [
+  {
+    feature: "Privacy",
+    others: "Trackers, cookies en advertentieprofielen",
+    rout: "Nul trackers, nul cookiemuur",
+  },
+  {
+    feature: "QR-codes",
+    others: "Rasterafbeelding, vaak achter een betaalmuur",
+    rout: "Vector SVG/PDF-export voor echte print",
+  },
+  {
+    feature: "Statistieken",
+    others: "Bezoekersprofielen per persoon",
+    rout: "Geaggregeerde tellingen zonder cookies",
+  },
+  {
+    feature: "Eigen domein",
+    others: "Enkel in dure plannen",
+    rout: "CNAME naar links.jouwdomein.be",
+  },
+  {
+    feature: "Je data",
+    others: "Export beperkt of onmogelijk",
+    rout: "Volledige .json-export in één klik",
+  },
+] as const;
+
 const FEATURES = [
   {
     icon: Sparkles,
@@ -217,6 +246,63 @@ export default function About() {
               </ul>
             </article>
           ))}
+        </section>
+
+        <section className="mt-16 rounded-2xl border border-border bg-card p-8 shadow-sm">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+            Onafhankelijk &amp; soeverein
+          </p>
+          <h2 className="mt-2 font-serif text-2xl font-semibold text-foreground">
+            Waarom we ROUT gebouwd hebben
+          </h2>
+          <div className="mt-4 grid gap-5 sm:grid-cols-2">
+            <p className="text-[15px] leading-relaxed text-muted-foreground">
+              Je online identiteit hoort niet thuis bij een advertentiebedrijf. De meeste
+              link-in-bio-diensten leven van meten, profileren en doorverkopen: elke klik
+              wordt een datapunt, elk profiel een advertentieplaats. ROUT is het
+              tegenovergestelde — geen trackers, geen cookiemuur, geen algoritme dat bepaalt
+              wie jouw links te zien krijgt.
+            </p>
+            <p className="text-[15px] leading-relaxed text-muted-foreground">
+              We draaien op eigen infrastructuur in Europa, bewaren enkel wat een profiel
+              nodig heeft, en geven je alles terug wanneer je dat wil: één klik exporteert je
+              volledige profiel als <code className="font-mono text-xs">.json</code>. Wil je
+              weg? Je neemt je data, je QR-codes en je eigen domein gewoon mee.
+            </p>
+          </div>
+
+          <div className="mt-8 overflow-hidden rounded-xl border border-border">
+            <div className="grid grid-cols-3 bg-muted/50 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <div className="p-3">Functie</div>
+              <div className="p-3">Klassieke link-tools</div>
+              <div className="p-3">ROUT</div>
+            </div>
+            {COMPARISON.map((row) => (
+              <div
+                key={row.feature}
+                className="grid grid-cols-3 border-t border-border text-sm"
+              >
+                <div className="p-3 font-medium text-foreground">{row.feature}</div>
+                <div className="p-3 text-muted-foreground">{row.others}</div>
+                <div className="p-3 text-foreground">{row.rout}</div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="mt-10 rounded-2xl border border-border bg-foreground p-8 text-center text-background shadow-sm">
+          <h2 className="font-serif text-2xl font-semibold">Claim jouw soevereine handle</h2>
+          <p className="mx-auto mt-2 max-w-lg text-sm opacity-80">
+            rout.be/jouwnaam — gratis, zonder tracking, met vector-QR en eigen domein wanneer
+            je eraan toe bent.
+          </p>
+          <Link
+            to="/auth"
+            className="mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-background px-6 text-sm font-medium text-foreground transition-opacity hover:opacity-90"
+          >
+            Claim je handle
+            <ArrowRight className="h-4 w-4" aria-hidden />
+          </Link>
         </section>
 
         <section className="mt-16 rounded-2xl border border-border bg-card p-8 text-center shadow-sm">
