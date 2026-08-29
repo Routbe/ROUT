@@ -235,6 +235,8 @@ export default function Donate() {
               />
             </div>
 
+            <Turnstile onToken={setBotToken} />
+
             <Button
               onClick={() => void submit()}
               disabled={submitting}
