@@ -631,7 +631,21 @@ export const BLOCK_KINDS: {
   },
   { kind: "shop", label: "Shop", category: "contact", placeholder: "https://shop.rout.be" },
   { kind: "link", label: "Eigen link", category: "contact", placeholder: "https://…" },
+  // Interactieve widgets: deze renderen als kaart op het profiel i.p.v. als link.
+  {
+    kind: "newsletter",
+    label: "Nieuwsbrief (inschrijfformulier)",
+    category: "web",
+    placeholder: "Blijf op de hoogte",
+  },
+  {
+    kind: "calendar",
+    label: "Afspraak boeken (Cal.com / Calendly)",
+    category: "web",
+    placeholder: "https://cal.com/jouwnaam/30min",
+  },
 ];
+
 
 export const BLOCK_CATEGORIES = [
   { id: "featured", label: "Soeverein & Fediverse" },
@@ -927,7 +941,10 @@ export function blockHref(block: ProfileBlock): string {
     case "evm":
       return `https://etherscan.io/address/${raw}`;
     case "wifi":
+    case "newsletter":
       return "";
+    case "calendar":
+      return raw.startsWith("http") ? raw : `https://${raw.replace(/^\/+/, "")}`;
     case "phone":
       return `tel:${raw.replace(/[^\d+]/g, "")}`;
     case "whatsapp":
@@ -941,6 +958,9 @@ export function blockHref(block: ProfileBlock): string {
     }
   }
 }
+
+/** Blokken die als interactieve widget renderen i.p.v. als gewone linkknop. */
+export const isWidgetBlock = (kind: string) => kind === "newsletter" || kind === "calendar";
 
 export const newBlockId = () =>
   `b_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;

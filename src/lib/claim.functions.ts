@@ -25,8 +25,18 @@ export const getVerifiedHandleOptions = createServerFn({ method: "GET" })
 /** Claims a free handle for the signed-in member. */
 export const claimHandle = createServerFn({ method: "POST" })
   .middleware([requireAuth])
-  .inputValidator((data: unknown) => z.object({ handle: z.string().max(200) }).parse(data))
+  .inputValidator((data: unknown) =>
+    z
+      .object({
+        handle: z.string().max(200),
+        turnstileToken: z.string().max(4000).optional().nullable(),
+      })
+      .parse(data),
+  )
   .handler(async ({ data, context }) => {
+    // Botbescherming: handles zijn schaars, dus reserveren vereist een mens.
+    const { assertHuman } = await import("./turnstile.server");
+    await assertHuman(data.turnstileToken ?? null);
     const { claimHandleFor } = await import("./claim.server");
     return claimHandleFor(context.userId, data.handle, context.db);
   });
