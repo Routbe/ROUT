@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { BadgeCheck, Mail } from "lucide-react";
-import { blockHref, themeOf, type ProfileRecord } from "@/lib/profile";
+import { blockHref, isWidgetBlock, themeOf, type ProfileRecord } from "@/lib/profile";
+import { BookingBlock, NewsletterBlock, isBookingUrl } from "@/components/profile/ProfileWidgets";
 import { SocialPlatformIcon } from "@/lib/social-icons";
 import { PLATFORM_LABEL, formatFollowers } from "@/lib/social-verify";
 import { BadgeShowcase } from "@/components/profile/BadgeShowcase";
@@ -47,7 +48,9 @@ export function ProfileView({
   const { t: tr, locale } = useI18n();
   const t = themeOf(profile.theme);
   const prefs = parseDisplayPrefs(profile.display_prefs);
-  const blocks = profile.blocks.filter((b) => !b.hidden && b.value.trim());
+  const blocks = profile.blocks.filter(
+    (b) => !b.hidden && (b.value.trim() !== "" || b.kind === "newsletter"),
+  );
   const buttonStyle = blockButtonStyle(profile.card_style, t);
   /** Eigen canvas- en patroonkleuren overschrijven het thema, indien gekozen. */
   const canvas = {
@@ -207,7 +210,24 @@ export function ProfileView({
               No links yet.
             </p>
           )}
-          {blocks.map((b) => (
+          {blocks.map((b) =>
+            isWidgetBlock(b.kind) || isBookingUrl(blockHref(b)) ? (
+              b.kind === "newsletter" ? (
+                <NewsletterBlock
+                  key={b.id}
+                  handle={profile.username ?? ""}
+                  label={b.label}
+                  style={buttonStyle}
+                />
+              ) : (
+                <BookingBlock
+                  key={b.id}
+                  href={blockHref(b)}
+                  label={b.label}
+                  style={buttonStyle}
+                />
+              )
+            ) : (
             <a
               key={b.id}
               href={blockHref(b)}
@@ -223,7 +243,8 @@ export function ProfileView({
               <span className="min-w-0 flex-1 truncate text-center">{b.label}</span>
               <span className="h-4 w-4 shrink-0" aria-hidden />
             </a>
-          ))}
+            ),
+          )}
         </div>
 
         {showWatermark && (

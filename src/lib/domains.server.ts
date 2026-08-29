@@ -125,3 +125,26 @@ export async function listDomainsFor(userId: string) {
      order by created_at desc
   `) as Row[];
 }
+
+/**
+ * Reverse lookup for CNAME hosting: which handle should a request host render?
+ *
+ * Only verified domains resolve, so an unverified (or removed) domain can
+ * never hijack a profile. Returns null for our own hosts and unknown domains.
+ */
+export async function findHandleForHost(host: string): Promise<string | null> {
+  const clean = host.trim().toLowerCase().replace(/:\d+$/, "").replace(/\.$/, "");
+  if (!clean || /(^|\.)(rout\.be|rout\.app|lovable\.app|localhost)$/.test(clean)) return null;
+
+  const rows = (await sql`
+    select p.username
+      from public.custom_domains d
+      join public.profiles p on p.id = d.user_id
+     where d.domain = ${clean}
+       and d.status = 'verified'
+     limit 1
+  `) as Row[];
+
+  const username = rows[0]?.["username"];
+  return typeof username === "string" && username ? username : null;
+}
